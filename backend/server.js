@@ -22,7 +22,10 @@ connectDB();
 // In production this should be your deployed frontend's exact URL (set via
 // the CLIENT_URL environment variable on your host). Falling back to '*'
 // keeps local development frictionless without needing to set it there.
-const allowedOrigin = process.env.CLIENT_URL || '*';
+// A trailing slash here would break CORS entirely - browsers send the Origin
+// header WITHOUT one, and CORS requires an exact string match - so we strip
+// it defensively rather than relying on the env var always being typed exactly right.
+const allowedOrigin = (process.env.CLIENT_URL || '*').replace(/\/+$/, '');
 
 // Middleware
 app.use(cors({ origin: allowedOrigin }));
