@@ -4,8 +4,8 @@ A real-time AI chatbot web app built on the MERN stack, powered by Google's Gemi
 
 ## Live Demo
 
-- Frontend: [add your deployed Netlify/Vercel URL here]
-- Backend API: [add your deployed Render URL here]
+- Frontend: https://jackoonai.netlify.app
+- Backend API: https://jackai-9e7r.onrender.com
 
 ## Features
 
