@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Tailwind v4: enable class-based dark mode (toggled by adding/removing
+   the "dark" class on <html>) instead of following the OS preference */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Design tokens - a warm, neutral palette with a single considered accent
+  color, rather than defaulting to Tailwind's stock gray/indigo. Referencing
+  these as CSS variables (instead of gray-900 dark:bg-gray-100 everywhere)
+  means every component automatically re-themes when .dark is toggled,
+  without needing a dark: variant on every single class.
+*/
+:root {
+  --bg-page: #fafaf9;
+  --bg-panel: #ffffff;
+  --bg-panel-alt: #f4f3ee;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --text-primary: #1f1e1d;
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --accent: #c1633d;
+  --accent-hover: #a8532f;
+  --bubble-user: #f1e7de;
+}
+
+.dark {
+  --bg-page: #262624;
+  --bg-panel: #2d2c2a;
+  --bg-panel-alt: #34332f;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --text-primary: #f2f1ec;
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --accent: #d97757;
+  --accent-hover: #c6663f;
+  --bubble-user: #3a2e27;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Smoother, more premium typing indicator: scale + fade instead of a hard
+   vertical bounce, staggered across the three dots. */
+@keyframes typing-pulse {
+  0%,
+  60%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.35;
+  }
+  30% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  animation: typing-pulse 1.2s ease-in-out infinite;
+}
+
+/* Themed scrollbar instead of the default OS one, matching the app's palette */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-secondary) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--text-secondary);
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--accent);
+}

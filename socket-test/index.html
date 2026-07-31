@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Socket.io Test Client</title>
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <style>
+    body { font-family: monospace; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+    input, button { padding: 8px; margin: 4px 0; width: 100%; box-sizing: border-box; }
+    button { cursor: pointer; }
+    #log { background: #111; color: #0f0; padding: 12px; height: 300px; overflow-y: auto; white-space: pre-wrap; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Socket.io Test Client</h2>
+
+  <label>JWT Token (from Postman Login response):</label>
+  <input id="token" type="text" placeholder="Paste your token here" />
+
+  <label>Conversation ID (from Postman Create Conversation response):</label>
+  <input id="conversationId" type="text" placeholder="Paste conversation _id here" />
+
+  <label>Message to send:</label>
+  <input id="messageText" type="text" placeholder="What is useEffect?" />
+
+  <button onclick="connectSocket()">1. Connect</button>
+  <button onclick="joinConversation()">2. Join Conversation</button>
+  <button onclick="sendMessage()">3. Send Message</button>
+  <button onclick="leaveConversation()">4. Leave Conversation</button>
+
+  <div id="log"></div>
+
+  <script>
+    let socket = null;
+    const log = (msg) => {
+      const el = document.getElementById('log');
+      el.textContent += msg + '\n';
+      el.scrollTop = el.scrollHeight;
+    };
+
+    function connectSocket() {
+      const token = document.getElementById('token').value.trim();
+      if (!token) return log('ERROR: paste a token first');
+
+      socket = io('http://localhost:5000', {
+        auth: { token },
+      });
+
+      socket.on('connect', () => log('CONNECTED. Socket ID: ' + socket.id));
+      socket.on('connect_error', (err) => log('CONNECTION ERROR: ' + err.message));
+      socket.on('disconnect', () => log('DISCONNECTED'));
+      socket.on('message_received', (data) => log('message_received: ' + JSON.stringify(data)));
+      socket.on('ai_response_start', () => log('ai_response_start (AI is typing...)'));
+      socket.on('ai_response_chunk', (data) => log('chunk: ' + data.content));
+      socket.on('ai_response_end', (data) => log('ai_response_end: ' + JSON.stringify(data)));
+      socket.on('error', (data) => log('SERVER ERROR: ' + JSON.stringify(data)));
+    }
+
+    function joinConversation() {
+      if (!socket) return log('ERROR: connect first');
+      const id = document.getElementById('conversationId').value.trim();
+      if (!id) return log('ERROR: paste a conversation ID first');
+      socket.emit('join_conversation', id);
+      log('Sent join_conversation for: ' + id);
+    }
+
+    function sendMessage() {
+      if (!socket) return log('ERROR: connect first');
+      const conversationId = document.getElementById('conversationId').value.trim();
+      if (!conversationId) return log('ERROR: paste a conversation ID first');
+      const content = document.getElementById('messageText').value.trim() || 'Hello, what is useEffect?';
+      socket.emit('send_message', { conversationId, content });
+      log('Sent send_message: ' + content);
+    }
+
+    function leaveConversation() {
+      if (!socket) return log('ERROR: connect first');
+      const id = document.getElementById('conversationId').value.trim();
+      socket.emit('leave_conversation', id);
+      log('Sent leave_conversation for: ' + id);
+    }
+  </script>
+</body>
+</html>

@@ -19,8 +19,13 @@ const server = http.createServer(app);
 // Connect to MongoDB
 connectDB();
 
+// In production this should be your deployed frontend's exact URL (set via
+// the CLIENT_URL environment variable on your host). Falling back to '*'
+// keeps local development frictionless without needing to set it there.
+const allowedOrigin = process.env.CLIENT_URL || '*';
+
 // Middleware
-app.use(cors());
+app.use(cors({ origin: allowedOrigin }));
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
@@ -37,7 +42,7 @@ app.use('/api/settings', settingsRoutes);
 // Set up Socket.io on top of the same HTTP server
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: allowedOrigin,
   },
 });
 
